@@ -23,12 +23,12 @@ export const signin = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const validUser = await User.findOne({ email });
-    if (!validUser) return next(errorHandler(404, "User not-found"));
+    if (!validUser) return next(errorHandler(404, "User not found"));
     const isValidPassword = await bcryptjs.compare(
       password,
       validUser.password
     );
-    if (!isValidPassword) return next(errorHandler(401, "wrong credentials"));
+    if (!isValidPassword) return next(errorHandler(401, "Wrong Credentials"));
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
 
     // removing the password from getting to client side..
