@@ -1,15 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({
     password: "",
     email: "",
   });
-
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     setFormData((prev) => ({
@@ -20,7 +27,8 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // it prevent the refreshing here ..
-    setLoading(true);
+    // setLoading(true);
+    dispatch(signInStart());
     try {
       const res = await fetch("/api/auth/signin", {
         method: "POST",
@@ -30,16 +38,20 @@ export default function SignIn() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (data.success) {
-        setError(true);
+      // console.log(data);
+      if (data?.success=== false) {
+        // setError(true);
+        dispatch(signInFailure(data));
         return;
       }
-      setLoading(false);
-      navigate('/');
+      // setLoading(false);
+      dispatch(signInSuccess(data));
+      navigate("/");
     } catch (error) {
-      setLoading(false);
-      setError(true);
-      console.log(error);
+      // setLoading(false);
+      // setError(true);
+      dispatch(signInFailure(error));
+      // console.log(error);
     }
     // console.log(data);
   };
@@ -66,9 +78,7 @@ export default function SignIn() {
         />
         <button
           disabled={
-            loading ||
-            formData.email === "" ||
-            formData.password === ""
+            loading || formData.email === "" || formData.password === ""
           }
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
@@ -83,7 +93,7 @@ export default function SignIn() {
           </Link>
         </p>
       </div>
-      <p className="text-red-700 mt-5">{error && "Something went wrong"}</p>
+      <p className="text-red-700 mt-5">{error && error.message || "Something went wrong"}</p>
     </div>
   );
 }
