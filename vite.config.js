@@ -9,7 +9,6 @@ export default defineConfig({
       "/api": {
         target: "https://auth-mern-server.vercel.app",
         changeOrigin: true,
-        secure: false,
       },
       // "/api": { target: "http://localhost:3000", secure:false },
     },
