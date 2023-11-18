@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -12,6 +13,7 @@ const app = express();
 
 app.use(morgan("tiny"));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
