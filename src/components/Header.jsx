@@ -18,6 +18,9 @@ export default function Header() {
             <Link to="/profile">Profile</Link>
           </li>
           <li>
+            <Link to="/about">About</Link>
+          </li>
+          <li>
             {currentUser ? (
               <Link to="/profile">
                 <img

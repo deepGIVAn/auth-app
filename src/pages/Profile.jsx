@@ -11,11 +11,17 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+  signoutUserStart,
+  signoutUserSuccess,
+  signoutUserFailure,
 } from "../redux/user/userSlice";
 
 export default function Profile() {
   const [formData, setFormData] = useState({});
-
+  
   const { currentUser, loading, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
@@ -30,6 +36,32 @@ export default function Profile() {
     setFormData({ ...formData, [event.target.id]: event.target.value });
   };
   // console.log(formData);
+
+  const handleDelete = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+        method: 'DELETE',
+      })
+      const data = await res.json();
+      if (data?.success === false) {
+        dispatch(deleteUserFailure(data));
+      }
+      dispatch(deleteUserSuccess());
+    } catch (error) {
+      dispatch(deleteUserFailure(error));
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(signoutUserStart());
+      await fetch(`/api/user/signout`);
+      dispatch(signoutUserSuccess());
+    } catch (error) {
+      dispatch(signoutUserFailure(error));      
+    }
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -151,8 +183,12 @@ export default function Profile() {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer">Delete Account</span>
-        <span className="text-red-700 cursor-pointer">Sign Out</span>
+        <span onClick={handleDelete} className="text-red-700 cursor-pointer">
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          Sign Out
+        </span>
       </div>
       <p className="text-red-700 mt-5">
         {error ? error.message || "Something went wrong" : ""}
