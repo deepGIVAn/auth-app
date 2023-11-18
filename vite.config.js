@@ -6,7 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": { target: "http://localhost:3000", secure:false },
+      "/api": {
+        target: "https://auth-mern-server.vercel.app",
+        changeOrigin: true,
+        secure: false,
+      },
+      // "/api": { target: "http://localhost:3000", secure:false },
     },
   },
 });
